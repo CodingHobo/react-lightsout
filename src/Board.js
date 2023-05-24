@@ -19,7 +19,9 @@ import "./Board.css";
  *       O  O  .     (where . is off, and O is on)
  *       .  .  .
  *
- *    This would be: [[f, f, f], [t, t, f], [f, f, f]]
+ *    This would be: [[f, f, f], 
+                  *  [t, t, f], 
+                  *  [f, f, f]]
  *
  *  This should render an HTML table of individual <Cell /> components.
  *
@@ -27,13 +29,23 @@ import "./Board.css";
  *
  **/
 
-function Board({ nrows, ncols, chanceLightStartsOn }) {
+function Board({ nrows = 5, ncols = 5, chanceLightStartsOn }) {
   const [board, setBoard] = useState(createBoard());
+  console.log(board);
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
   function createBoard() {
     let initialBoard = [];
     // TODO: create array-of-arrays of true/false values
+  
+    for (let i = 0; i < nrows; i++) {
+      const row = [];
+        for (let j = 0; j < ncols; j++) {
+          row.push(chanceLightStartsOn());
+        }
+      initialBoard.push(row);
+    }
+
     return initialBoard;
   }
 
@@ -68,6 +80,30 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
   // make table board
 
   // TODO
+
+  function generateHtmlBoard() {
+    const grid = board.map((row, rowIndex) => (
+      <tr key={rowIndex}>{row.map((col, colIndex) => 
+        <Cell key={colIndex}/>)}</tr>
+    ))
+
+    return grid;
+  }
+
+  return (
+    // render board 
+      // using tables 
+      // each row will be a <tr>
+        // each row will render a Cell component as a td 
+        // Cell component takes props of function flipCellsAround and a isLit (either true or false)
+
+    <table>
+      <tbody>
+        {generateHtmlBoard()}
+      </tbody>
+    </table>
+    
+  )
 }
 
 export default Board;
