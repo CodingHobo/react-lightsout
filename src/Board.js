@@ -19,8 +19,8 @@ import "./Board.css";
  *       O  O  .     (where . is off, and O is on)
  *       .  .  .
  *
- *    This would be: [[f, f, f], 
-                  *  [t, t, f], 
+ *    This would be: [[f, f, f],
+                  *  [t, t, f],
                   *  [f, f, f]]
  *
  *  This should render an HTML table of individual <Cell /> components.
@@ -31,13 +31,13 @@ import "./Board.css";
 
 function Board({ nrows = 5, ncols = 5, chanceLightStartsOn }) {
   const [board, setBoard] = useState(createBoard());
-  console.log(board);
+  // console.log(board);
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
   function createBoard() {
     let initialBoard = [];
     // TODO: create array-of-arrays of true/false values
-  
+
     for (let i = 0; i < nrows; i++) {
       const row = [];
         for (let j = 0; j < ncols; j++) {
@@ -51,6 +51,7 @@ function Board({ nrows = 5, ncols = 5, chanceLightStartsOn }) {
 
   function hasWon() {
     // TODO: check the board in state to determine whether the player has won.
+    return board.every(row => row.every(cell => !cell));
   }
 
   function flipCellsAround(coord) {
@@ -66,43 +67,57 @@ function Board({ nrows = 5, ncols = 5, chanceLightStartsOn }) {
       };
 
       // TODO: Make a (deep) copy of the oldBoard
+      const boardCopy = oldBoard.map(row => [...row])
 
       // TODO: in the copy, flip this cell and the cells around it
+      flipCell(y, x, boardCopy);
+      flipCell(y-1, x, boardCopy);
+      flipCell(y+1, x, boardCopy);
+      flipCell(y, x-1, boardCopy);
+      flipCell(y, x+1, boardCopy)
 
       // TODO: return the copy
+      return boardCopy;
     });
   }
 
   // if the game is won, just show a winning msg & render nothing else
+  if (hasWon()) {
+    return <div>You Win!</div>;
+  }
 
   // TODO
 
   // make table board
 
-  // TODO
-
   function generateHtmlBoard() {
-    const grid = board.map((row, rowIndex) => (
-      <tr key={rowIndex}>{row.map((col, colIndex) => 
-        <Cell key={colIndex}/>)}</tr>
-    ))
+    const grid = [];
 
+    for (let y = 0; y < nrows; y++) {
+      let row = [];
+      for (let x = 0; x < ncols; x++) {
+        let coord = `${y}-${x}`;
+
+        row.push(
+            <Cell
+            key={coord}
+            isLit={board[y][x]}
+            flipCellsAroundMe={evt => flipCellsAround(coord)}
+            />
+          )
+      }
+        grid.push(<tr key={y}>{row}</tr>)
+    }
     return grid;
   }
 
   return (
-    // render board 
-      // using tables 
-      // each row will be a <tr>
-        // each row will render a Cell component as a td 
-        // Cell component takes props of function flipCellsAround and a isLit (either true or false)
-
     <table>
       <tbody>
         {generateHtmlBoard()}
       </tbody>
     </table>
-    
+
   )
 }
 
